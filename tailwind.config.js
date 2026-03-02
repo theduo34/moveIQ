@@ -1,6 +1,6 @@
-const { semantic } = require("./theme/colors");
-
 /** @type {import('tailwindcss').Config} */
+const {semantic} = require("./theme/color");
+
 module.exports = {
   content: [
     "./App.{js,jsx,ts,tsx}",
