@@ -1,16 +1,16 @@
 import ScreenLayout from "../../layout/screen-layout";
 import {Text, View} from "react-native";
 
-const MapScreen = () => {
+const RegisterScreen = () => {
   return(
     <ScreenLayout
-      screen={"map"}
-      navbarTitle={"Map"}
+      screen={"register"}
+      showNavbar={false}
     >
       <View>
-        <Text className={"text-red-600"}>Map Screen</Text>
+        <Text>Register up Screen</Text>
       </View>
     </ScreenLayout>
   )
 }
-export default MapScreen;
+export default RegisterScreen;
