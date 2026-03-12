@@ -1,16 +1,26 @@
-import ScreenLayout from "../../layout/screen-layout";
-import {Text, View} from "react-native";
+import { Text, View } from "react-native";
+import MoveSafeView from "../../MoveSafeView";
+
 
 const LoginScreen = () => {
   return(
-    <ScreenLayout
-      screen={"login"}
-      showNavbar={false}
-    >
+  
+    <MoveSafeView bgColor={'#003838'}>
+
       <View>
-        <Text>Login Screen</Text>
+        <Text>Sign In</Text>
+
+        <Text>email </Text>
+
       </View>
-    </ScreenLayout>
+
+    
+   </MoveSafeView>
+
   )
 }
 export default LoginScreen;
+
+
+
+
