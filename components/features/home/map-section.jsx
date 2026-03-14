@@ -1,10 +1,12 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useRef, useState } from "react";
-import { View, Text, Pressable, TouchableOpacity } from "react-native";
+import { useRef, useState, useEffect } from "react";
+import { View, Text, Pressable, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import MapView, { UrlTile, PROVIDER_DEFAULT } from "react-native-maps";
+import MapView, { UrlTile, Marker, Polyline, PROVIDER_NONE } from "react-native-maps";
 import { TriangleAlert, Crosshair, Search, ChevronDown } from "lucide-react-native";
 import { useRouter } from "expo-router";
+import * as Location from "expo-location";
+import { useMapStore } from "../../../store/map/useMapStore";
 
 const INITIAL_REGION = {
   latitude: 6.5244,
@@ -15,8 +17,8 @@ const INITIAL_REGION = {
 
 const OSM_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
-// ─── Search Bar Trigger (not an input — tapping opens Search screen) ──────────
-const SearchBarTrigger = ({ onPress }) => (
+// ─── Search Bar Trigger ───────────────────────────────────────────────────────
+const SearchBarTrigger = ({ onPress, destinationName }) => (
   <TouchableOpacity
     onPress={onPress}
     activeOpacity={0.85}
@@ -30,8 +32,8 @@ const SearchBarTrigger = ({ onPress }) => (
     }}
   >
     <Search size={16} color="#1B6B5A" strokeWidth={2} />
-    <Text className="flex-1 ml-3 text-sm text-gray-400">
-      Search Route "Try Iyana - CMS"
+    <Text className="flex-1 ml-3 text-sm text-gray-400" numberOfLines={1}>
+      {destinationName ?? 'Search Route "Try Iyana - CMS"'}
     </Text>
     <ChevronDown size={16} color="#9CA3AF" strokeWidth={2} />
   </TouchableOpacity>
@@ -80,13 +82,74 @@ const MapSection = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
+  const { destination, routeCoords, setCurrentLocation, currentLocation } = useMapStore();
+
+  const [locationError, setLocationError] = useState(null);
+  const [locating, setLocating] = useState(true);
+
+  // ── Live location tracking ─────────────────────────────────────────────────
+  useEffect(() => {
+    let subscription;
+
+    const startTracking = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setLocationError("Location permission denied.");
+        setLocating(false);
+        return;
+      }
+
+      // Get initial position fast
+      const initial = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+      const coords = {
+        latitude: initial.coords.latitude,
+        longitude: initial.coords.longitude,
+      };
+      setCurrentLocation(coords);
+      setLocating(false);
+
+      // Animate map to live location
+      mapRef.current?.animateToRegion(
+        { ...coords, latitudeDelta: 0.05, longitudeDelta: 0.05 },
+        800
+      );
+
+      // Watch for position updates
+      subscription = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High,
+          timeInterval: 5000,
+          distanceInterval: 5,
+        },
+        (loc) => {
+          setCurrentLocation({
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+          });
+        }
+      );
+    };
+
+    startTracking();
+    return () => subscription?.remove();
+  }, []);
+
   const handleRecenter = () => {
-    mapRef.current?.animateToRegion(INITIAL_REGION, 600);
+    if (currentLocation) {
+      mapRef.current?.animateToRegion(
+        { ...currentLocation, latitudeDelta: 0.05, longitudeDelta: 0.05 },
+        600
+      );
+    } else {
+      mapRef.current?.animateToRegion(INITIAL_REGION, 600);
+    }
   };
 
-const handleOpenSearch = () => {
-  router.push("/search");
-};
+  const handleOpenSearch = () => {
+    router.push("/(protected)/(stack)/search-route");
+  };
 
   return (
     <View className="flex-1">
@@ -94,9 +157,9 @@ const handleOpenSearch = () => {
       <MapView
         ref={mapRef}
         style={{ flex: 1 }}
-        provider={PROVIDER_DEFAULT}
+        provider={PROVIDER_NONE}
         initialRegion={INITIAL_REGION}
-        showsUserLocation
+        showsUserLocation={true}
         showsMyLocationButton={false}
         showsCompass={false}
         rotateEnabled={false}
@@ -108,14 +171,51 @@ const handleOpenSearch = () => {
           flipY={false}
           zIndex={1}
         />
+
+        {/* Destination marker */}
+        {destination && (
+          <Marker
+            coordinate={destination}
+            title="Destination"
+            description={destination.name}
+            pinColor="#1B6B5A"
+          />
+        )}
+
+        {/* Route polyline */}
+        {routeCoords.length > 0 && (
+          <Polyline
+            coordinates={routeCoords}
+            strokeColor="#1B6B5A"
+            strokeWidth={4}
+          />
+        )}
       </MapView>
+
+      {/* Locating indicator */}
+      {locating && (
+        <View className="absolute top-20 self-center bg-white rounded-full px-4 py-2 flex-row items-center gap-2 shadow-sm">
+          <ActivityIndicator size="small" color="#1B6B5A" />
+          <Text className="text-xs text-gray-500">Finding your location...</Text>
+        </View>
+      )}
+
+      {/* Location error */}
+      {locationError && (
+        <View className="absolute top-20 self-center bg-red-50 border border-red-200 rounded-full px-4 py-2">
+          <Text className="text-xs text-red-600">{locationError}</Text>
+        </View>
+      )}
 
       {/* Search bar trigger — top inset aware */}
       <View
         className="absolute left-4 right-4"
         style={{ top: insets.top }}
       >
-        <SearchBarTrigger onPress={handleOpenSearch} />
+        <SearchBarTrigger
+          onPress={handleOpenSearch}
+          destinationName={destination?.name}
+        />
       </View>
 
       {/* FABs — bottom inset aware */}

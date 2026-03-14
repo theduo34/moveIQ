@@ -5,7 +5,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import MapView, { UrlTile, PROVIDER_DEFAULT } from "react-native-maps";
+import MapView, { UrlTile, PROVIDER_NONE } from "react-native-maps";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import {
   ArrowLeft, MoreVertical, Car, AlertCircle,
@@ -257,7 +257,7 @@ const RouteDetailScreen = ({ routeName = "Iyanapaja - CMS", region }) => {
         <MapView
           ref={mapRef}
           style={{ flex: 1 }}
-          provider={PROVIDER_DEFAULT}
+          provider={PROVIDER_NONE}
           initialRegion={mapRegion}
           showsUserLocation
           showsMyLocationButton={false}
