@@ -12,16 +12,12 @@ const api = axios.create({
 });
 
 // ── Request interceptor — attach JWT token to every request ──────────────────
-api.interceptors.request.use(
-  (config) => {
-    const token = useAuthStore.getState().token;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+api.interceptors.request.use((config) => {
+  const { useAuthStore } = require("../store/auth/useAuthStore");
+  const token = useAuthStore.getState().token;
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 // ── Response interceptor — handle 401 globally ───────────────────────────────
 api.interceptors.response.use(

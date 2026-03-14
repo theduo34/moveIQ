@@ -31,7 +31,13 @@
     "plugins": [
       "expo-router",
       "expo-dev-client",
-
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "MoveIQ needs your location to show live traffic on your route.",
+          "locationWhenInUsePermission": "MoveIQ needs your location to show live traffic on your route."
+        }
+      ],
       [
         "expo-splash-screen",
         {

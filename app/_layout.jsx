@@ -24,7 +24,7 @@ export default function RootLayout() {
               <Stack.Screen name="(protected)" />
             </Stack.Protected>
 
-            <Stack.Screen
+            {/* <Stack.Screen
               name="search-route"
               options={{
                 presentation: "modal",
@@ -40,7 +40,7 @@ export default function RootLayout() {
                 animation: "slide_from_bottom",
                 headerShown: false,
               }}
-            />
+            /> */}
 
           </Stack>
         </SafeAreaProvider>
