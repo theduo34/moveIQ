@@ -3,14 +3,14 @@ import { Tabs } from "expo-router";
 import {
   Bell,
   House,
-  Map,
+  MapPinned,
   Search, User,
 } from "lucide-react-native";
 
 const TABS = [
   { name: "home", title: "Home", icon: House },
   { name: "search", title: "Search", icon: Search },
-  { name: "routes", title: "Routes", icon: Map },
+  { name: "routes", title: "Routes", icon: MapPinned },
   { name: "activity", title: "Activity", icon: Bell },
   { name: "profile", title: "Profile", icon: User },
 ];
