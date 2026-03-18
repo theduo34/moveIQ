@@ -43,7 +43,7 @@ const SearchBarTrigger = ({ onPress, destinationName }) => (
 const ReportFAB = ({ onPress }) => (
   <Pressable
     onPress={onPress}
-    className="w-14 h-14 rounded-full bg-emerald-800 items-center justify-center active:opacity-80"
+    className="w-16 h-16 rounded-full bg-emerald-800 items-center justify-center active:opacity-80"
     style={{
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 4 },
@@ -52,7 +52,7 @@ const ReportFAB = ({ onPress }) => (
       elevation: 8,
     }}
   >
-    <TriangleAlert size={18} color="#F5A623" strokeWidth={2.5} />
+    <TriangleAlert size={20} color="#F5A623" strokeWidth={4} />
     <Text className="text-white font-semibold mt-0.5" style={{ fontSize: 9 }}>
       Report
     </Text>
@@ -218,14 +218,18 @@ const MapSection = () => {
         />
       </View>
 
-      {/* FABs — bottom inset aware */}
-      <View
-        className="absolute right-4 items-center gap-3"
-        style={{ bottom: insets.bottom + 24 }}
-      >
-        <ReportFAB onPress={() => {}} />
-        <RecenterButton onPress={handleRecenter} />
-      </View>
+        {/* FABs — vertically centered on right side */}
+        <View
+            className="absolute right-4 items-center gap-3"
+            style={{
+                top: 0,
+                bottom: 0,
+                justifyContent: 'center',
+            }}
+        >
+            <ReportFAB onPress={() => router.push("/(protected)/(stack)/report-incident")} />
+            <RecenterButton onPress={handleRecenter} />
+        </View>
     </View>
   );
 };

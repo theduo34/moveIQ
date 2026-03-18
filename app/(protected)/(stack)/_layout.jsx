@@ -13,6 +13,7 @@ export default function StackLayout() {
         name="add-route"
         options={{ presentation: "modal", animation: "slide_from_bottom" }}
       />
+        <Stack.Screen name="report-incident" />
     </Stack>
   );
 }

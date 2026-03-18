@@ -1,5 +1,5 @@
+import { Text, View } from "react-native";
 import ScreenLayout from "../../layout/screen-layout";
-import {Text, View} from "react-native";
 
 const VerifyScreen = () => {
   return(
