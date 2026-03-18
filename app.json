@@ -21,6 +21,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
+
       "package": "com.moveiq.app"
     },
     "web": {
@@ -54,6 +55,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "028e1e20-13a5-4d1a-ad1c-7cf18fc1e074"
+      }
     }
   }
 }

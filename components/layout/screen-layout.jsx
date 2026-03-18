@@ -1,8 +1,7 @@
-import React from "react";
-import {SafeAreaView} from "react-native-safe-area-context";
-import {ScrollView, View} from "react-native";
-import {useRootNavigationState, useSegments} from "expo-router";
-import {TabNav} from "./tab-nav";
+import { useRootNavigationState, useSegments } from "expo-router";
+import { ScrollView, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { TabNav } from "./tab-nav";
 
 const ScreenLayout = (
   {
@@ -61,7 +60,7 @@ const ScreenLayout = (
             variant={navbarVariant}
           />
         )}
-        <View className="p-4 flex-1 bg-background">
+        <View className="p-4 flex-1"  style={{ backgroundColor: "#003838" }}>
           {content}
         </View>
       </View>
