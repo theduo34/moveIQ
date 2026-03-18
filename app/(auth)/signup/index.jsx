@@ -1,8 +1,8 @@
-import SignUpScreen from "../../../components/screens/auth/signup-screen";
+import RegisterScreen from "../../../components/screens/auth/register-screen";
 
 const Index = () => {
   return(
-    <SignUpScreen />
+    <RegisterScreen />
   )
 }
 export default Index;

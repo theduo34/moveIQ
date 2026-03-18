@@ -1,17 +1,18 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import {
+  Bell,
   House,
-  Map,
-  Route,
-  Settings,
+  MapPinned,
+  Search, User,
 } from "lucide-react-native";
 
 const TABS = [
   { name: "home", title: "Home", icon: House },
-  { name: "map", title: "Map", icon: Map },
-  { name: "route", title: "Route", icon: Route },
-  { name: "settings", title: "Settings", icon: Settings },
+  { name: "search", title: "Search", icon: Search },
+  { name: "routes", title: "Routes", icon: MapPinned },
+  { name: "activity", title: "Activity", icon: Bell },
+  { name: "profile", title: "Profile", icon: User },
 ];
 
 export default function TabsLayout() {
@@ -24,39 +25,41 @@ export default function TabsLayout() {
         tabBarStyle: {
           height: 64,
           paddingBottom: 4,
+          paddingTop: 4,
+          backgroundColor: "#FFFFFF",
+          borderRadius: 32,
+          marginHorizontal: 16,
+          marginBottom: 24,
           borderTopWidth: 0,
-          elevation: 0,
+          position: "absolute",
+          elevation: 12,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.1,
+          shadowRadius: 16,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: "500",
-          marginTop: 2,
+          marginTop: 0,
         },
       }}
     >
       {TABS.map((tab) => {
         const IconComponent = tab.icon;
-
         return (
           <Tabs.Screen
             key={tab.name}
             name={tab.name}
             options={{
               title: tab.title,
-              tabBarIcon: ({ color, focused }) => {
-                return (
-                  <IconComponent
-                    color={color}
-                    size={focused ? 26 : 24}
-                    strokeWidth={focused ? 2.5 : 2}
-                    style={{
-                      transform: [{ scale: focused ? 1.1 : 1 }],
-                    }}
-                  />
-                );
-              },
-              tabBarLabel:
-                tab.name === "add-money" ? () => null : undefined,
+              tabBarIcon: ({ color, focused }) => (
+                <IconComponent
+                  color={color}
+                  size={22}
+                  strokeWidth={focused ? 2.5 : 1.8}
+                />
+              ),
             }}
           />
         );

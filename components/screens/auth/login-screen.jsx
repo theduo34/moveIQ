@@ -1,30 +1,34 @@
-import { useRouter } from "expo-router";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { auth } from "../../../app/firebase";
+import {
+  View, Text, TextInput, Pressable,
+  Image, StyleSheet, ActivityIndicator, Alert,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuthStore } from "../../../store/auth/useAuthStore";
 import MoveSafeView from "../../MoveSafeView";
-
-
-
+ 
 const LoginScreen = () => {
-
-   const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+ 
+const { setFromFirebase } = useAuthStore();
 
-  const handleLogin = async () => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log("User logged in:", userCredential.user.email);
-
-    
-      router.replace("/(protected)/(tabs)/home"); 
-    } catch (error) {
-      console.log("Login error:", error.message);
-      alert(error.message); 
-    }
-  };
+const handleLogin = async () => {
+  if (!email.trim() || !password.trim()) {
+    Alert.alert("Error", "Please enter your email and password.");
+    return;
+  }
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    setFromFirebase(userCredential.user);
+    router.replace("/(protected)/(tabs)/home");
+  } catch (error) {
+    Alert.alert("Login failed", error.message);
+  }
+};
 
  
   return(
