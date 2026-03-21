@@ -10,8 +10,9 @@ const MoveSafeView = ({children, bgColor}) => {
         <TouchableWithoutFeedback onPress={()=> {
             Keyboard.dismiss()}}>
         <SafeAreaView style ={{
-            paddingHorizontal: width * 0.04,
+            paddingHorizontal: width * 0.1,
             flex: 1,
+            
             backgroundColor: bgColor ? bgColor : 'white'
         }}>
 

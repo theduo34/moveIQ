@@ -32,8 +32,11 @@ const SearchBarTrigger = ({ onPress, destinationName }) => (
     }}
   >
     <Search size={16} color="#1B6B5A" strokeWidth={2} />
-    <Text className="flex-1 ml-3 text-sm text-gray-400" numberOfLines={1}>
-      {destinationName ?? 'Search Route "Try Iyana - CMS"'}
+    <Text
+      className={`flex-1 ml-3 text-sm ${destinationName ? "text-gray-800" : "text-gray-400"}`}
+      numberOfLines={1}
+    >
+      {destinationName?.split(",")[0] ?? "Select a route..."}
     </Text>
     <ChevronDown size={16} color="#9CA3AF" strokeWidth={2} />
   </TouchableOpacity>
@@ -77,12 +80,12 @@ const RecenterButton = ({ onPress }) => (
 );
 
 // ─── Main MapSection ──────────────────────────────────────────────────────────
-const MapSection = () => {
+const MapSection = ({ onMapInteraction }) => {
   const mapRef = useRef(null);
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  const { destination, routeCoords, setCurrentLocation, currentLocation } = useMapStore();
+  const { destination, origin, routeCoords, setCurrentLocation, currentLocation } = useMapStore();
 
   const [locationError, setLocationError] = useState(null);
   const [locating, setLocating] = useState(true);
@@ -136,6 +139,32 @@ const MapSection = () => {
     return () => subscription?.remove();
   }, []);
 
+  // Fit map to show the full route whenever routeCoords update
+  useEffect(() => {
+    if (routeCoords.length === 0 || !mapRef.current) return;
+
+    const lats = routeCoords.map((c) => c.latitude);
+    const lons = routeCoords.map((c) => c.longitude);
+    const minLat = Math.min(...lats);
+    const maxLat = Math.max(...lats);
+    const minLon = Math.min(...lons);
+    const maxLon = Math.max(...lons);
+
+    // Small delay ensures the map is settled after navigating back
+    const timer = setTimeout(() => {
+      mapRef.current?.animateToRegion(
+        {
+          latitude: (minLat + maxLat) / 2,
+          longitude: (minLon + maxLon) / 2,
+          latitudeDelta: Math.max((maxLat - minLat) * 1.5, 0.01),
+          longitudeDelta: Math.max((maxLon - minLon) * 1.5, 0.01),
+        },
+        800
+      );
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [routeCoords]);
+
   const handleRecenter = () => {
     if (currentLocation) {
       mapRef.current?.animateToRegion(
@@ -164,6 +193,8 @@ const MapSection = () => {
         showsCompass={false}
         rotateEnabled={false}
         toolbarEnabled={false}
+        onPress={onMapInteraction}
+        onPanDrag={onMapInteraction}
       >
         <UrlTile
           urlTemplate={OSM_TILE_URL}
@@ -171,6 +202,16 @@ const MapSection = () => {
           flipY={false}
           zIndex={1}
         />
+
+        {/* Custom origin marker (only when user picked a manual "from" location) */}
+        {origin && (
+          <Marker
+            coordinate={origin}
+            title="From"
+            description={origin.name}
+            pinColor="#3B82F6"
+          />
+        )}
 
         {/* Destination marker */}
         {destination && (
@@ -186,8 +227,10 @@ const MapSection = () => {
         {routeCoords.length > 0 && (
           <Polyline
             coordinates={routeCoords}
-            strokeColor="#1B6B5A"
-            strokeWidth={4}
+            strokeColor="#2563EB"
+            strokeWidth={6}
+            zIndex={2}
+            geodesic
           />
         )}
       </MapView>

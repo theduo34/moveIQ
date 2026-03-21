@@ -5,7 +5,9 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import MapView, { UrlTile, PROVIDER_NONE } from "react-native-maps";
+import MapView, { UrlTile, Polyline, Marker, PROVIDER_NONE } from "react-native-maps";
+import { useEffect } from "react";
+import { useMapStore } from "../../../../store/map/useMapStore";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import {
   ArrowLeft, MoreVertical, Car, AlertCircle,
@@ -191,12 +193,32 @@ const RouteDetailScreen = ({ routeName = "Iyanapaja - CMS", region }) => {
   const router = useRouter();
   const mapRef = useRef(null);
   const bottomSheetRef = useRef(null);
-  const snapPoints = useMemo(() => ["50%", "80%"], []);
+  const snapPoints = useMemo(() => ["20%", "50%", "80%"], []);
+
+  const collapseSheet = () => bottomSheetRef.current?.snapToIndex(0);
+
+  const { routeCoords, origin, destination } = useMapStore();
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+
+  // Fit map to the route when coords are available
+  useEffect(() => {
+    if (routeCoords.length === 0 || !mapRef.current) return;
+    const lats = routeCoords.map((c) => c.latitude);
+    const lons = routeCoords.map((c) => c.longitude);
+    mapRef.current.animateToRegion(
+      {
+        latitude: (Math.min(...lats) + Math.max(...lats)) / 2,
+        longitude: (Math.min(...lons) + Math.max(...lons)) / 2,
+        latitudeDelta: Math.max((Math.max(...lats) - Math.min(...lats)) * 1.5, 0.01),
+        longitudeDelta: Math.max((Math.max(...lons) - Math.min(...lons)) * 1.5, 0.01),
+      },
+      800
+    );
+  }, [routeCoords]);
 
   const mapRegion = region ?? {
     latitude: 6.5244,
@@ -253,7 +275,7 @@ const RouteDetailScreen = ({ routeName = "Iyanapaja - CMS", region }) => {
       </View>
 
       {/* ── Map ── */}
-      <View style={{ height: 360 }}>
+      <View className="flex-1">
         <MapView
           ref={mapRef}
           style={{ flex: 1 }}
@@ -264,19 +286,38 @@ const RouteDetailScreen = ({ routeName = "Iyanapaja - CMS", region }) => {
           showsCompass={false}
           rotateEnabled={false}
           toolbarEnabled={false}
+          onPress={collapseSheet}
+          onPanDrag={collapseSheet}
         >
           <UrlTile urlTemplate={OSM_TILE_URL} maximumZ={19} flipY={false} zIndex={1} />
+
+          {origin && (
+            <Marker coordinate={origin} title="From" pinColor="#3B82F6" />
+          )}
+          {destination && (
+            <Marker coordinate={destination} title="Destination" pinColor="#1B6B5A" />
+          )}
+          {routeCoords.length > 0 && (
+            <Polyline
+              coordinates={routeCoords}
+              strokeColor="#2563EB"
+              strokeWidth={6}
+              zIndex={2}
+              geodesic
+            />
+          )}
         </MapView>
       </View>
 
       {/* ── Bottom sheet ── */}
       <BottomSheet
         ref={bottomSheetRef}
-        index={0}
+        index={1}
         snapPoints={snapPoints}
         handleIndicatorStyle={{ backgroundColor: "#E5E7EB", width: 40 }}
         backgroundStyle={{ borderRadius: 28 }}
         enableDynamicSizing={false}
+        enablePanDownToClose={false}
       >
         {/* Sheet header */}
         <View className="flex-row items-center justify-between px-5 py-3 ">

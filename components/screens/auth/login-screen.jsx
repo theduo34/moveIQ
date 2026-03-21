@@ -7,6 +7,8 @@ import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuthStore } from "../../../store/auth/useAuthStore";
 import MoveSafeView from "../../MoveSafeView";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../services/firebase";
  
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -33,7 +35,7 @@ const handleLogin = async () => {
  
   return(
   
-    <MoveSafeView bgColor={'#003838'}>
+    <MoveSafeView bgColor={'#003838'} insets={insets}>
 
       <View>
         <Text style={Styles.text1}>Sign in</Text>

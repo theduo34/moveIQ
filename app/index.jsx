@@ -1,8 +1,9 @@
 import { Redirect } from "expo-router";
+import { useAuthStore } from "../store/auth/useAuthStore";
 
 export default function Index() {
-  const isAuthenticated = false;
-
+const isAuthenticated = useAuthStore((state) => state.isAuthenticated);                                                       
+ 
   if (isAuthenticated) {
     return <Redirect href="/(protected)/(tabs)/home" />;
   }

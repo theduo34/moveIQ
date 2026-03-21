@@ -3,6 +3,7 @@ import { create } from "zustand";
 export const useMapStore = create((set, get) => ({
   // ── State ──────
   currentLocation: null,   // { latitude, longitude }
+  origin: null,            // { latitude, longitude, name } — custom origin, null = use currentLocation
   destination: null,        // { latitude, longitude, name }
   routeCoords: [],          // [{ latitude, longitude }, ...]
   routeLoading: false,
@@ -10,6 +11,7 @@ export const useMapStore = create((set, get) => ({
 
   // ── Actions ───
   setCurrentLocation: (coords) => set({ currentLocation: coords }),
+  setOrigin: (coords) => set({ origin: coords }),
 
   // Search destination via Nominatim + fetch route via OSRM
   searchAndRoute: async (query) => {
@@ -53,11 +55,20 @@ export const useMapStore = create((set, get) => ({
     }
   },
 
-  // Fetch A-to-B route via OSRM
+  // Fetch A-to-B route via OSRM, fall back to straight line if it fails or times out
   fetchRoute: async (start, end) => {
+    const straightLine = [
+      { latitude: start.latitude, longitude: start.longitude },
+      { latitude: end.latitude, longitude: end.longitude },
+    ];
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000); // 6s timeout
+
     try {
       const url = `https://router.project-osrm.org/route/v1/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?geometries=geojson`;
-      const res = await fetch(url);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeout);
       const json = await res.json();
 
       if (json.routes && json.routes.length > 0) {
@@ -66,11 +77,14 @@ export const useMapStore = create((set, get) => ({
           longitude: c[0],
         }));
         set({ routeCoords: coords });
+      } else {
+        set({ routeCoords: straightLine });
       }
     } catch (err) {
-      console.log("OSRM routing error:", err.message);
+      clearTimeout(timeout);
+      set({ routeCoords: straightLine });
     }
   },
 
-  clearDestination: () => set({ destination: null, routeCoords: [], routeError: null }),
+  clearDestination: () => set({ origin: null, destination: null, routeCoords: [], routeError: null }),
 }));

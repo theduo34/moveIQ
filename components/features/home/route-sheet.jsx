@@ -1,29 +1,38 @@
 import {View, Text, ActivityIndicator} from "react-native";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
-import {useRef, useMemo, useEffect} from "react";
+import {useMemo, useEffect} from "react";
 import {useRouteStore} from "../../../store/routes/useRoutesStore";
+import {useMapStore} from "../../../store/map/useMapStore";
 import {RouteAlertCard} from "./route-alert";
 import {ROUTE_ALERTS} from "./home";
 import { useRouter } from "expo-router";
 
-const RouteSheet = () => {
+const RouteSheet = ({ sheetRef }) => {
   const {alerts, loading, error, fetchAlerts} = useRouteStore();
-  const bottomSheetRef = useRef(null);
-  const snapPoints = useMemo(() => ["40%", "85%"], []);
+  const routeCoords = useMapStore((state) => state.routeCoords);
+  const snapPoints = useMemo(() => ["20%", "40%", "85%"], []);
   const router = useRouter();
 
   useEffect(() => {
     fetchAlerts()
   }, [fetchAlerts]);
 
+  // Collapse to 20% whenever a route is loaded so the map is visible
+  useEffect(() => {
+    if (routeCoords.length > 0) {
+      sheetRef?.current?.snapToIndex(0);
+    }
+  }, [routeCoords]);
+
   return (
     <BottomSheet
-      ref={bottomSheetRef}
-      index={0}
+      ref={sheetRef}
+      index={1}
       snapPoints={snapPoints}
       handleIndicatorStyle={{backgroundColor: "#E5E7EB", width: 40}}
       backgroundStyle={{borderRadius: 34, borderColor: "#E9EAEB", borderWidth: 2}}
       enableDynamicSizing={false}
+      enablePanDownToClose={false}
     >
       <View className="flex-row items-center justify-between px-4 py-4">
         <View className="flex-row items-center">

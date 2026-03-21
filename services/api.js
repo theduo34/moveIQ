@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useAuthStore } from "../store/auth/useAuthStore";
 
 const BASE_URL = "http://localhost:5000/api"; // change to your deployed URL in production
 
@@ -25,6 +24,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Token expired or invalid — log the user out
+      const { useAuthStore } = require("../store/auth/useAuthStore");
       useAuthStore.getState().logout();
     }
     return Promise.reject(error);

@@ -21,7 +21,7 @@ const [password, setPassword] = useState("");
     );
 
     console.log("User created:", userCredential.user.email);
-  router.push('/(auth)/login')
+  router.push('/(protected)/(tabs)/home');
 
   } catch (error) {
     console.log(error.message);

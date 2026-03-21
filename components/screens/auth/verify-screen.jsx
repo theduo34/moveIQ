@@ -8,7 +8,7 @@ const VerifyScreen = () => {
       showNavbar={false}
     >
       <View>
-        <Text>Verify Screen</Text>
+        <Text>Verify Screen New</Text>
       </View>
     </ScreenLayout>
   )

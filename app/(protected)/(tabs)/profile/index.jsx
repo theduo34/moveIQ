@@ -1,8 +1,5 @@
-import ProfileScreen from "../../../../components/screens/protected/profile/profile";
+import ProfileTabScreen from "../../../../components/screens/protected/profile/profile-tab-screen";
 
-const Index = () => {
-  return(
-    <ProfileScreen />
-  )
+export default function Profile() {
+  return <ProfileTabScreen />;
 }
-export default Index;
