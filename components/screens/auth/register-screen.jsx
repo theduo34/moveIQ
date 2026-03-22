@@ -76,8 +76,7 @@ const [password, setPassword] = useState("");
 
 
       <View>
-        <Text>or</Text>
-
+        <Text style={Styles.or}>or</Text>
       </View>
 
 
@@ -88,7 +87,7 @@ const [password, setPassword] = useState("");
 
 
       
-      <View style={{flexDirection:'row', marginTop:30, alignSelf:'center'}}>
+      <View style={{flexDirection:'row', marginTop:20, alignSelf:'center'}}>
         <Text style={{fontFamily:'semibold', fontSize:16, fontWeight:600, color:'#FFFFFF'}}>Already have an account?</Text>
       
         <Pressable onPress={() => {
@@ -191,9 +190,16 @@ const Styles = StyleSheet.create({
     backgroundColor:'#f5f5f5',
     paddingHorizontal:15,
     alignItems:'center',
-    marginTop:30
+    marginTop:20
+  },
 
-  }
+    or:{
+    fontFamily:'bold',
+    fontSize:20,
+    textAlign:'center',
+    color:'white',
+    marginTop:25
+  },
 })
 
 

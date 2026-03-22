@@ -62,16 +62,16 @@
 // This file is the root layout of your app. It wraps all the screens and provides common functionality like font loading and authentication state management.
 
 // app/_layout.jsx
-import { useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth"; // ← from firebase/auth
-import { auth } from "../services/firebase";         // ← auth instance from your file
-import { useAuthStore } from "../store/auth/useAuthStore";
-import { Stack } from "expo-router";
-import { useFonts } from "expo-font";
-import "../global.css";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import { onAuthStateChanged } from "firebase/auth"; // ← from firebase/auth
+import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import "../global.css";
+import { auth } from "../services/firebase"; // ← auth instance from your file
+import { useAuthStore } from "../store/auth/useAuthStore";
 
 export default function RootLayout() {
   const { isAuthenticated, setFromFirebase, logout } = useAuthStore();
@@ -96,6 +96,8 @@ export default function RootLayout() {
     });
     return unsubscribe;
   }, []);
+
+
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

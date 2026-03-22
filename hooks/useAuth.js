@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
-import {authService} from "../services/auth/auth-service";
-import {ROUTES} from "../constants/routes";
-import {useAuthStore} from "../store/auth/useAuthStore";
+import { ROUTES } from "../constants/routes";
+import { authService } from "../services/auth/auth-service";
+import { useAuthStore } from "../store/auth/useAuthStore";
 
 const useAuth = () => {
   const { user, token, isAuthenticated, loading, login, logout, updateUser } =
@@ -28,6 +28,21 @@ const useAuth = () => {
     }
   };
 
+  const handleForgotPassword = async (email) => {
+    if (!email || email.trim() === "") {
+    alert("Please enter your email first");
+    return;
+  }
+
+  try {
+    await authService.resetPassword(email);
+    alert("Password reset email sent!");
+  } catch (err) {
+    console.error("Reset failed:", err.message);
+    alert(err.message);
+  }
+};
+
   return {
     user,
     token,
@@ -36,6 +51,7 @@ const useAuth = () => {
     updateUser,
     handleLogin,
     handleLogout,
+    handleForgotPassword,
   };
 };
 

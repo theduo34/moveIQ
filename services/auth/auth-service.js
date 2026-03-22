@@ -1,4 +1,6 @@
+import { sendPasswordResetEmail } from "firebase/auth";
 import api from "../api";
+import { auth } from "../firebase";
 
 export const authService = {
   login: async (credentials) => {
@@ -23,5 +25,9 @@ export const authService = {
   refreshToken: async (refreshToken) => {
     const { data } = await api.post("/auth/refresh", { refreshToken });
     return data;
+  },
+
+  resetPassword: async (email) => {
+  return await sendPasswordResetEmail(auth, email);
   },
 };

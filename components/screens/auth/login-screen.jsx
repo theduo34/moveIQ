@@ -1,10 +1,17 @@
+import { useRouter } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import {
-  View, Text, TextInput, Pressable,
-  Image, StyleSheet, ActivityIndicator, Alert,
+  Alert,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text, TextInput,
+  View
 } from "react-native";
-import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import useAuth from "../../../hooks/useAuth";
+import { auth } from "../../../services/firebase";
 import { useAuthStore } from "../../../store/auth/useAuthStore";
 import MoveSafeView from "../../MoveSafeView";
  
@@ -13,8 +20,12 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const [showPassword, setShowPassword] = useState(false);
  
 const { setFromFirebase } = useAuthStore();
+const { handleForgotPassword } = useAuth();
+
+
 
 const handleLogin = async () => {
   if (!email.trim() || !password.trim()) {
@@ -58,9 +69,15 @@ const handleLogin = async () => {
 
       <View style={Styles.regView}>
         <Image style={Styles.image} source={require('../../../assets/images/lock.png')}/>
-        <TextInput style={Styles.input} placeholder="Enter your password" secureTextEntry onChangeText={setPassword} placeholderTextColor={'#a4a7ae'}/>
+        <TextInput style={Styles.input} placeholder="Enter your password"  secureTextEntry={!showPassword} onChangeText={setPassword} placeholderTextColor={'#a4a7ae'}/>
+        <Pressable onPress={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: 10, top: 19 }}
+  >       <Text style={Styles.passwordview}>{showPassword ? "hide" : "view"}</Text>
+        </Pressable>
       </View>
 
+      <Pressable onPress={() => handleForgotPassword(email)}>
+        <Text style={{ color: "white", marginTop: 6, textAlign:'right', fontFamily:'medium', fontSize:12 }}>Forgot Password?</Text>
+      </Pressable>
 
       <Pressable onPress={handleLogin}>
         <View style={Styles.signInView}>
@@ -70,8 +87,7 @@ const handleLogin = async () => {
 
 
       <View>
-        <Text>or</Text>
-
+        <Text style={Styles.or}>or</Text>
       </View>
 
 
@@ -192,6 +208,20 @@ const Styles = StyleSheet.create({
     alignItems:'center',
     marginTop:30
 
+  },
+  
+  or:{
+    fontFamily:'bold',
+    fontSize:20,
+    textAlign:'center',
+    color:'white',
+    marginTop:25
+  },
+
+  passwordview:{
+    color: '#a4a7ae',
+    fontFamily: 'medium',
+    fontSize:14
   }
 })
 
